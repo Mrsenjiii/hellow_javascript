@@ -20,6 +20,7 @@
 */
 
 
+
 /*
  * buyProduct makes a purchase in the cafe, and does the following:
  * 1. Reduces the stock of a product based on the buy request
@@ -34,7 +35,8 @@
  * The method should return true if the purchase is successful, and false in the following cases:
  * 1. Product is not available in Cafe
  * 2. The quantity to be puchased is more than the current stock of a product
-*/
+
+
 
 /*
  * returnProduct makes a return of a purchase in the cafe, and does the following:
@@ -42,8 +44,8 @@
  * 2. Updates the cafe balance based on the return request
  * 3. Updates or deletes the CustomerProducts instance to the customer_products of Cafe class (delete in case of a full return)
  *
- * 
- * 
+ *
+ *
  * @param {number} customer_id - unique ID of customer
  * @param {object} product - object of Product class
  * @param {number} count - number of items (quantity) to be returned
@@ -84,12 +86,13 @@ class CustomerProducts {
 
 
 class Cafe {
-    constructor(products, balance) {
+    constructor(products, balance){
       this.products = products;
       this.balance = balance;
       //Maintain the customer history
       this.customer_products = [];
     }
+
 
 
     buyProduct(customer_id, product, count){
@@ -127,6 +130,7 @@ class Cafe {
             if (x.customer_id == customer_id){
                 // customer in the database.
                 customer_obj = x ;
+                break;
             }
         }
 
@@ -135,47 +139,47 @@ class Cafe {
             if(count < customer_obj.count){ // counts of returns is less 
                 customer_obj.count = customer_obj.count -  count ;
                 this.balance = this.balance - customer_obj.product.price*count;
+                customer_obj.product.stock = customer_obj.product.stock + count;
                 // console.log("retured succesfully stilll in the database")
+                return true;
             }
             else{
                 this.balance = this.balance -  customer_obj.product.price*count;
-                let indx = this.CustomerProducts.indexOf(customer_obj);
-                const another = this.customer_products.slice(indx,indx+1);
-                this.customer_products = another;
+                customer_obj.product.stock = customer_obj.product.stock + count;
+                console.log(customer_obj.product.stock)
+                let indx = this.customer_products.indexOf(customer_obj);
+                this.customer_products.splice(indx,1);
+                return true;
                 // console.log('returnd and deleted from database.');
+
             }
-            return true
-        }
-        return false
+
+        } 
+        return false;
     }
 
     getCurrentBalance(){
       // get the current balance at cafe
+      return this.balance;
     }
   }
 
 
 
 const apple = new Product('apple',80,80)
-const mango = new Product('mango',50,60)
+const mango = new Product('mango',50,10)
 const guava = new Product('guava',32,30)
-const carrot = new Product('carrot',82,20)
+const carrot = new Product('carrot',82,10)
 const peanuts = new Product('peanuts',100,55)
 const honey = new Product('honey',23,4)
 
 
 
 const grocery_cafe = new Cafe([mango,apple,guava,carrot,peanuts] , 0 );
-const x012=grocery_cafe.buyProduct('x012',peanuts,15);
-const x013 = grocery_cafe.buyProduct('x013',carrot,8);
-console.log(grocery_cafe.balance)
+const c1 = grocery_cafe.buyProduct(101,mango,5)// bought
+console.log( 'c1 can buy : ', c1 )
 console.log(grocery_cafe.customer_products)
-// console.log('result' , result);
-// console.log(peanuts.stock)
-// console.log(grocery_cafe.balance)
-const custo = grocery_cafe.returnProduct('x012' , peanuts,5)
-console.log(x012.count)
-// console.log(custo)
-console.log(grocery_cafe.balance)
+console.log('balance of the cafe', grocery_cafe.getCurrentBalance())
+grocery_cafe.returnProduct(101,mango,3)
+console.log('balance of the cafe', grocery_cafe.getCurrentBalance())
 console.log(grocery_cafe.customer_products)
-console.log(x012.count)
